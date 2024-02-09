@@ -29,7 +29,7 @@ user_timer = {}
 Intents: Intents = Intents.default()
 Intents.message_content = True  # NOQA
 # client = Client(intents=Intents)
-bot = commands.Bot(intents=Intents, command_prefix="!", help_command=help_command)
+bot = commands.Bot(intents=Intents, command_prefix="/", help_command=help_command)
 
 # Set channel for logs:
 log_channel_id = 1205262797517094952
@@ -88,17 +88,15 @@ async def create_channel(ctx, channel_name='empty'):
 
 @bot.command(name="delete-channel", help=".delete-channel channelname")
 @commands.has_role('Admin')
-async def deleter_channel(ctx, channel_name="empty"):
-    guild = ctx.guild
-    existing_channel = discord.utils.get(guild.channels, name=channel_name)
-    if existing_channel:
-        print(f"trying to delete {channel_name}")
-        await channel_name.delete()
-        await guild.delete_text_channel(1205508580925640774)
-        await ctx.delete_text_channel(channel_name)
-        await ctx.delete_channel(channel_name)
-    else:
-        await ctx.send(f"Channel {channel_name} doesn't exists")
+async def deleter_channel(ctx, channels: discord.TextChannel):
+    # guild = ctx.guild
+    print(f"channels: {channels}")
+    # existing_channel = discord.utils.get(guild.channels, name=channels)
+    # if existing_channel:
+    await channels.delete()
+    await ctx.send(f"Channel {channels} was successfully deleted!")
+    # else:
+    #     await ctx.send(f"Channel {channels} doesn't exists")
 
 
 @bot.command(name="ping", help="pong?")

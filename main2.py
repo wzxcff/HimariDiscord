@@ -28,15 +28,15 @@ user_timer = {}
 # Setup bot
 Intents: Intents = Intents.default()
 Intents.message_content = True  # NOQA
+Intents.members = True
 # client = Client(intents=Intents)
-bot = commands.Bot(intents=Intents, command_prefix="/", help_command=help_command)
+bot = commands.Bot(intents=Intents, command_prefix="!", help_command=help_command)
 
 # Set channel for logs:
-log_channel_id = 1205262797517094952
+log_channel_id = 1205541327148810340
 welcome_channel_id = 1205284046515609710
 monitoring_channel_id = 1205150098435080215
 voice_category_id = 1205150098435080213
-user_dict = {}
 temporary_channels = []
 temporary_categories = []
 
@@ -119,9 +119,9 @@ async def himari_about(ctx):
     await ctx.send("Himari was created specifically for <3\nAnd cannot be used for other servers. :pink_heart:")
 
 
-@bot.command(name="create-voice", help="Creates a new voice channel")
-async def create_voice(ctx, member: discord.Member):
-    print("ENTRY")
+# @bot.command(name="create-voice", help="Creates a new voice channel")
+# async def create_voice(ctx, member: discord.Member):
+#     print("ENTRY")
 
 
 # Bot Events
@@ -140,6 +140,7 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
+    print("Entried on member join")
     await bot.get_channel(welcome_channel_id).send(f"Greetings, <@{member.id}>!")
     button = Button(label=f"Kick {member.display_name}", style=discord.ButtonStyle.red)
     view = View()
@@ -158,13 +159,12 @@ async def on_message(message):
 
     if message.content.lower() == "hello, himari!":
         await message.channel.send(choice([
-            "Hello :P",
-            "Hiiii!!"
+            "Hiiii!!",
             "<3"
         ]))
 
     if message.content.lower() == "!":
-        await message.channel.send("Sorry?")
+        await message.channel.send("Sorry? Did not understand")
 
 
 if __name__ == '__main__':

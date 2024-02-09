@@ -30,7 +30,7 @@ Intents: Intents = Intents.default()
 Intents.message_content = True  # NOQA
 Intents.members = True
 # client = Client(intents=Intents)
-bot = commands.Bot(intents=Intents, command_prefix="!", help_command=help_command)
+bot = commands.Bot(intents=Intents, command_prefix="-", help_command=help_command)
 
 # Set channel for logs:
 log_channel_id = 1205541327148810340
@@ -72,7 +72,7 @@ async def roll_dice(ctx):
     await ctx.send(str(randint(1, 6)))
 
 
-@bot.command(name='create-channel', help="Was created for creating :P another channel")
+@bot.command(name='create-channel', help=".create-channel *name*")
 @commands.has_role('Admin')
 async def create_channel(ctx, channel_name='empty'):
     guild = ctx.message.guild
@@ -86,7 +86,7 @@ async def create_channel(ctx, channel_name='empty'):
         await ctx.send("Cannot create a new channel, already exists")
 
 
-@bot.command(name="delete-channel", help=".delete-channel channelname")
+@bot.command(name="delete-channel", help=".delete-channel *name*")
 @commands.has_role('Admin')
 async def deleter_channel(ctx, channels: discord.TextChannel):
     # guild = ctx.guild
@@ -108,9 +108,10 @@ async def pong(ctx):
 # @commands.has_permissions(kick_members=True)
 @commands.has_role('Admin')
 async def kick(ctx, *, user: discord.Member):
-    reason = None
+    reason = "Unfortunately, you are kicked from the server :broken_heart:"
     await user.kick(reason=None)
     kick_embed = discord.Embed(title=f":boot: Kicked {user.name}!", description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+    await user.send(embed=kick_embed)
     await bot.get_channel(log_channel_id).send(embed=kick_embed)
 
 
@@ -138,16 +139,32 @@ async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
 
 
+# class MyView(discord.ui.View):
+#     @discord.ui.button(label="Trust", style=discord.ButtonStyle.green, custom_id="trusted")
+#     async def button_callback(self, interaction: discord.Interaction, button: discord.ui.Button, ctx, *, user: discord.Member):
+#         role_id = int(button.custom_id.split(":")[-1])
+#         role = interaction.guild.get_role(1205562849833787422)
+#
+#         await interaction.user.add_roles(1205562849833787422)
+#         await interaction.response.send_message("role given", ephemeral=True)
+#         # reason = "Unfortunately, you are kicked from the server :broken_heart:"
+#         # await user.kick(reason=reason)
+#         # kick_embed = discord.Embed(title=f":boot: Kicked {user.name}!",description=f"Reason: {reason}\nBy: {ctx.author.mention}")
+#         # await user.send(embed=kick_embed)
+#         # await bot.get_channel(log_channel_id).send(embed=kick_embed)
+#         # await interaction.response.send_message("Kicked!")
+
+
 @bot.event
 async def on_member_join(member):
-    print("Entried on member join")
+    # view = View()
     await bot.get_channel(welcome_channel_id).send(f"Greetings, <@{member.id}>!")
-    button = Button(label=f"Kick {member.display_name}", style=discord.ButtonStyle.red)
-    view = View()
-    view.add_item(button)
-    embed_message = discord.Embed(title=f"**{member.display_name}** just connected!", description="Kick them?")
+    # button = Button(label=f"Kick {member.display_name}", style=discord.ButtonStyle.red)
+    # view.add_item(button)
+    embed_message = discord.Embed(title=f"**{member.display_name}** just connected!", description="Click \"Trust\" them if you want give permission to join not temporary channels.")
+    await member.send("Welcome to <3")
     embed_message.set_author(name="New user", icon_url=member.avatar.url)
-    await bot.get_channel(log_channel_id).send(embed=embed_message, view=view)
+    await bot.get_channel(log_channel_id).send(embed=embed_message)  # view=MyView()
 
 
 @bot.event
@@ -163,7 +180,7 @@ async def on_message(message):
             "<3"
         ]))
 
-    if message.content.lower() == "!":
+    if message.content.lower() == "-":
         await message.channel.send("Sorry? Did not understand")
 
 
